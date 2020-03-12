@@ -3,7 +3,7 @@ public class ReadyQueue {
 	
 	Process firstProcess;
 	
-	public void enqueue (int [] arr) {
+	public void enqueue (int [] arr,int status) {
 		Process process = new Process();
 		process.process = arr[0];
 		process.time = arr[1];
@@ -18,6 +18,7 @@ public class ReadyQueue {
 			p.nextProcess = process;
 			
 		}
+		firstProcess.status = status;
 	}
 	//Process currentPocess (){
 	//	return firstProcess;
@@ -45,14 +46,21 @@ public class ReadyQueue {
 		p.nextProcess = process;
 	}
 	void terminateProcess() {
+			firstProcess = firstProcess.nextProcess;	
+	}
+	int priorityDeterminer(int time,int priority) {
+		if (time < firstProcess.nextProcess.time) {
+			priorityDeterminer( time, priority);
+		}else {
+			for (int i =0;i<priority-1;i++) {
+				//priority = 
+			}
+		}
 		
-	
-			firstProcess = firstProcess.nextProcess;
 		
-	
+		return priority;
 		
 	}
-	
 	
 
 }

@@ -3,50 +3,57 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.Thread;
 
 public class Scheduler implements Runnable {
 	static Process process = null;
 	static ReadyQueue a = new ReadyQueue();
-	static RoundRobinMethod p = new RoundRobinMethod();
-	//static int nextProcessToExecute = 100000;
+	static int timer = 0;
+	static int threadCount = 0;
+	 static RoundRobinScheduling scheduler = new RoundRobinScheduling ();
+	//@SuppressWarnings("deprecation")
 	public static void main (String[] args) {
 		
+
 		createReadyQueue();
-		//a.showReadyQueue();
-		int timer = 0;
+		//Thread thread = new Thread( new RoundRobinScheduling());
+
+		//thread.start();
 		while (a.firstProcess!=null){
+			//thread.start();
 		int [] arr = {a.firstProcess.process,a.firstProcess.time-1};
-		//p.executeCurrentProcess(a.firstProcess, timer++);
-		timer++;
-		roundRobinScheduler(timer);
-		a.firstProcess.status = 1;
+		timer ++;
+		scheduler.roundRobinScheduler(timer,a.firstProcess);
+		
+		
 		if (a.firstProcess.time == 0 ) {
 			a.terminateProcess();
 		}else {
-			
-		a.enqueue(arr);
+		a.enqueue(arr,1);
+		//a.priorityInsert(2,arr);
 		a.terminateProcess();
-		//a.showReadyQueue();
-		//System.out.println();
+		
 		}
 		
-		}			
+		}	
+		
+		System.out.print("THREADS: "+threadCount);
 	}
-	static void roundRobinScheduler (int timer) {
-		a.firstProcess.time = a.firstProcess.time -1;
-		if( a.firstProcess.status == 0) {
-			System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" Started");
 
-		}
+	
 		
+	
+class Schedule{
+	void roundRobinScheduler () {
+		a.firstProcess.time = a.firstProcess.time -1;
 		System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" Resumed");
-		
+		timer++;
 		System.out.println("Time "+timer+","+"Process "+ a.firstProcess.process+","+" paused");
-		if(a.firstProcess.time == 0 && a.firstProcess.nextProcess!=null) {
+		if(a.firstProcess.time == 0) {
 		System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" finished");
 		
 		}
-	
+	}
 	
 		
 	}
@@ -71,7 +78,7 @@ public class Scheduler implements Runnable {
 					int time = Integer.parseInt(splitter[1]);
 					int [] arr = {processnum,time} ;
 					
-					a.enqueue(arr);
+					a.enqueue(arr,0);
 					
 					
 			}
@@ -92,7 +99,8 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" StartedREEEEEEE");
+		threadCount++;
 	}
 }
 	
