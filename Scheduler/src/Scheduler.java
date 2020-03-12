@@ -6,41 +6,50 @@ import java.io.IOException;
 
 public class Scheduler implements Runnable {
 	static Process process = null;
-	static requestQueueBuilder a = new requestQueueBuilder();
-	static int nextProcessToExecute = 100000;
+	static ReadyQueue a = new ReadyQueue();
+	static RoundRobinMethod p = new RoundRobinMethod();
+	//static int nextProcessToExecute = 100000;
 	public static void main (String[] args) {
 		
 		createReadyQueue();
-		
-		RoundRobinMethod currentProcess = new RoundRobinMethod();
-		int timer = 1;
-		
-		//while (process!=null) {	
-		for(int i = 0;i<10;i++) {
+		//a.showReadyQueue();
+		int timer = 0;
+		while (a.firstProcess!=null){
+		int [] arr = {a.firstProcess.process,a.firstProcess.time-1};
+		//p.executeCurrentProcess(a.firstProcess, timer++);
+		timer++;
+		roundRobinScheduler(timer);
+		a.firstProcess.status = 1;
+		if (a.firstProcess.time == 0 ) {
+			a.terminateProcess();
+		}else {
 			
-			if(process.time==0) {
-				System.out.println("Time "+timer+","+"Process "+process.process+","+" finished");
-				process = a.nextProcessToExecute(process);
-			}else {
-		currentProcess.executeCurrentProcess(process,timer);
-		int [] arr = {process.process,process.time};
-		timer ++;
-		System.out.println("Time "+timer+","+"Process "+ process.process+","+" paused");
-		process = a.append(arr, process);
-		a.terminateProcess(process);
+		a.enqueue(arr);
+		a.terminateProcess();
+		//a.showReadyQueue();
+		//System.out.println();
+		}
 		
-		process = a.nextProcessToExecute(process);
-		}
-			
-		}
-				
+		}			
 	}
+	static void roundRobinScheduler (int timer) {
+		a.firstProcess.time = a.firstProcess.time -1;
+		if( a.firstProcess.status == 0) {
+			System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" Started");
 
-	
+		}
+		
+		System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" Resumed");
+		
+		System.out.println("Time "+timer+","+"Process "+ a.firstProcess.process+","+" paused");
+		if(a.firstProcess.time == 0 && a.firstProcess.nextProcess!=null) {
+		System.out.println("Time "+timer+","+"Process "+a.firstProcess.process+","+" finished");
+		
+		}
 	
 	
 		
-	
+	}
 	static void createReadyQueue () {
 		File file = new File("C:\\Users\\pirey\\Desktop\\test.txt"); //read a text file
 		BufferedReader br = null;
@@ -62,7 +71,7 @@ public class Scheduler implements Runnable {
 					int time = Integer.parseInt(splitter[1]);
 					int [] arr = {processnum,time} ;
 					
-					process = a.append(arr, process);
+					a.enqueue(arr);
 					
 					
 			}

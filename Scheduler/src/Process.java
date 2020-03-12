@@ -1,6 +1,6 @@
 public class Process {
 	int process;
 	int time;
-	int priority = 0;
+	int status = 0;
 	Process nextProcess;
 }	
